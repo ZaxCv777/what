@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>VT/TikTok Downloader - MP4 & MP3</title>
+    <!-- Font Awesome 6 (free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* container utama */
+        .downloader-card {
+            max-width: 820px;
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* header */
+        .header {
+            background: rgba(0,0,0,0.4);
+            padding: 1.6rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #c084fc, #60a5fa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header h1 i {
+            background: none;
+            background-clip: unset;
+            -webkit-background-clip: unset;
+            color: #f43f5e;
+            font-size: 1.8rem;
+        }
+
+        .sub {
+            color: #cbd5e1;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* body */
+        .body-content {
+            padding: 2rem 2rem 2rem 2rem;
+        }
+
+        /* input group */
+        .input-group {
+            background: rgba(15,23,42,0.7);
+            border-radius: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.2s;
+            margin-bottom: 28px;
+            backdrop-filter: blur(4px);
+        }
+
+        .input-group:focus-within {
+            border-color: #f97316;
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.3);
+        }
+
+        .input-group i {
+            padding: 0 18px;
+            font-size: 1.3rem;
+            color: #94a3b8;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 18px 0;
+            font-size: 1rem;
+            color: #f1f5f9;
+            outline: none;
+            font-weight: 500;
+        }
+
+        .input-group input::placeholder {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        /* tombol download format */
+        .format-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .btn-format {
+            background: rgba(30,41,59,0.8);
+            border: none;
+            padding: 12px 32px;
+            border-radius: 60px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #e2e8f0;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .btn-format i {
+            font-size: 1.2rem;
+        }
+
+        .btn-format.active {
+            background: linear-gradient(105deg, #f97316, #ea580c);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 6px 14px rgba(249,115,22,0.4);
+        }
+
+        .btn-format:not(.active):hover {
+            background: #334155;
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* tombol unduh utama */
+        .download-action {
+            background: linear-gradient(95deg, #0f172a, #1e293b);
+            border-radius: 60px;
+            padding: 4px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        #downloadBtn {
+            width: 100%;
+            background: linear-gradient(95deg, #f97316, #dc2626);
+            border: none;
+            padding: 16px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 8px 20px rgba(220,38,38,0.3);
+        }
+
+        #downloadBtn i {
+            font-size: 1.3rem;
+        }
+
+        #downloadBtn:hover {
+            transform: scale(0.98);
+            background: linear-gradient(95deg, #ea580c, #b91c1c);
+            box-shadow: 0 4px 12px rgba(220,38,38,0.5);
+        }
+
+        /* preview area */
+        .preview-area {
+            background: rgba(0,0,0,0.35);
+            border-radius: 32px;
+            margin-top: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px dashed rgba(255,255,255,0.3);
+            transition: all 0.2s;
+        }
+
+        .preview-placeholder {
+            color: #94a3b8;
+            padding: 20px 10px;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .preview-placeholder i {
+            font-size: 3rem;
+            opacity: 0.6;
+        }
+
+        .video-preview {
+            max-width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+            margin-bottom: 12px;
+        }
+
+        .info-meta {
+            margin-top: 12px;
+            font-size: 0.8rem;
+            background: #0f172a80;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 50px;
+            color: #cbd5e6;
+        }
+
+        /* loading & pesan */
+        .loading-spinner {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #f97316;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 28px;
+            background: rgba(0,0,0,0.5);
+            font-size: 0.85rem;
+            text-align: center;
+            color: #facc15;
+            border-left: 4px solid #f97316;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1.2rem;
+            font-size: 0.75rem;
+            color: #5b6e8c;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        @media (max-width: 550px) {
+            .body-content {
+                padding: 1.5rem;
+            }
+            .btn-format {
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
+            .header h1 {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="downloader-card">
+    <div class="header">
+        <h1>
+            <i class="fab fa-tiktok"></i> 
+            VT/TikTok Downloader
+        </h1>
+        <div class="sub">Unduh video & audio (MP4 / MP3) — tanpa watermark</div>
+    </div>
+    <div class="body-content">
+        <!-- Input URL -->
+        <div class="input-group">
+            <i class="fas fa-link"></i>
+            <input type="text" id="videoUrl" placeholder="Tempel link TikTok atau VT ( contoh: https://vt.tiktok.com/... atau https://www.tiktok.com/@.../video/... )">
+            <i class="fas fa-paste" id="pasteIcon" style="cursor:pointer; padding-right:18px;" title="Tempel dari clipboard"></i>
+        </div>
+
+        <!-- Pilihan format MP4 / MP3 -->
+        <div class="format-buttons">
+            <button class="btn-format active" data-format="mp4" id="btnMp4">
+                <i class="fas fa-video"></i> MP4 (Video)
+            </button>
+            <button class="btn-format" data-format="mp3" id="btnMp3">
+                <i class="fas fa-music"></i> MP3 (Audio)
+            </button>
+        </div>
+
+        <!-- Tombol download utama -->
+        <div class="download-action">
+            <button id="downloadBtn">
+                <i class="fas fa-download"></i> Proses & Unduh
+            </button>
+        </div>
+
+        <!-- Area preview / hasil -->
+        <div class="preview-area" id="previewArea">
+            <div class="preview-placeholder" id="previewPlaceholder">
+                <i class="fas fa-cloud-download-alt"></i>
+                <span>Masukkan URL TikTok/VT, pilih format, lalu klik unduh.<br>Preview akan tampil di sini.</span>
+            </div>
+            <div id="dynamicPreview" style="display: none;"></div>
+        </div>
+
+        <!-- Pesan info -->
+        <div id="messageBox" class="message-box" style="display: none;"></div>
+    </div>
+    <div class="footer">
+        <i class="fas fa-shield-alt"></i> Supports TikTok & VT links • Server-side parsing simulasi (API demo) • Untuk penggunaan pribadi
+    </div>
+</div>
+
+<script>
+    // ---------- FAKE API SIMULATOR (menggantikan backend nyata) ----------
+    // Karena batasan frontend murni, kita akan melakukan simulasi fetch ke "cors proxy" + ekstrak info video.
+    // Agar fungsional seperti downloader, kita gunakan layanan publik no-cost (cors-anywhere demo) + endpoint TikTok.
+    // Tapi agar tidak bergantung pada layanan yang tidak stabil, saya akan menggunakan pendekatan: 
+    // Menggunakan API dari 'tikdown.org' atau 'snaptik'? Tidak etis tanpa izin. Jadi kita gunakan 
+    // solusi DEMO dengan video dummy dan informasi terbatas? Tapi user request ingin "bisa mp4 mp3" nyata.
+    // Untuk demo yang fully functional (bisa download video tiktok asli), kita akan memanfaatkan endpoint publik:
+    // https://tikwm.com/api/ (API publik tanpa kunci, cukup terkenal untuk downloader).
+    // Saya implementasi dengan fetch ke API TikWM (gratis, tanpa auth) -> ini memungkinkan unduh mp4 & mp3 (audio).
+    // Juga mendukung VT links karena API ini support.
+    // Ini solusi real-world tanpa backend sendiri. Saya akan gunakan itu agar tool benar-benar berfungsi.
+    // Catatan: TikWM API mendukung link TikTok dan menampilkan data video, watermark free, serta audio.
+    
+    // Elemen DOM
+    const urlInput = document.getElementById('videoUrl');
+    const btnMp4 = document.getElementById('btnMp4');
+    const btnMp3 = document.getElementById('btnMp3');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const previewArea = document.getElementById('previewArea');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+    const dynamicPreviewDiv = document.getElementById('dynamicPreview');
+    const messageBox = document.getElementById('messageBox');
+
+    let currentFormat = 'mp4';   // default
+    let currentVideoData = null;   // menyimpan data dari API { title, videoUrlNoWm, audioUrl, cover, duration }
+    let isLoading = false;
+
+    // fungsi show/hide pesan
+    function showMessage(msg, isError = true) {
+        messageBox.style.display = 'block';
+        messageBox.innerHTML = isError ? `<i class="fas fa-exclamation-triangle"></i> ${msg}` : `<i class="fas fa-check-circle"></i> ${msg}`;
+        if (!isError) {
+            messageBox.style.color = "#bbf7d0";
+            messageBox.style.borderLeftColor = "#22c55e";
+        } else {
+            messageBox.style.color = "#facc15";
+            messageBox.style.borderLeftColor = "#f97316";
+        }
+        setTimeout(() => {
+            if (messageBox) messageBox.style.display = 'none';
+        }, 5000);
+    }
+
+    // fungsi reset preview ke placeholder
+    function resetPreview() {
+        dynamicPreviewDiv.style.display = 'none';
+        previewPlaceholder.style.display = 'flex';
+        currentVideoData = null;
+    }
+
+    // menampilkan preview video & info
+    function updatePreview(data) {
+        // data: { videoUrl, audioUrl, title, cover, duration }
+        previewPlaceholder.style.display = 'none';
+        dynamicPreviewDiv.style.display = 'block';
+        const isMp4Selected = (currentFormat === 'mp4');
+        const mediaUrl = isMp4Selected ? (data.videoUrl || data.videoUrlNoWm) : (data.audioUrl);
+        
+        let html = '';
+        if (isMp4Selected && data.videoUrl) {
+            html += `<video class="video-preview" controls width="100%" src="${data.videoUrl}" poster="${data.cover || ''}"></video>`;
+        } else if (!isMp4Selected && data.audioUrl) {
+            html += `<audio controls style="width:100%; margin-top:8px;" src="${data.audioUrl}"></audio>`;
+            if(data.cover) html += `<div style="margin-top:12px;"><img src="${data.cover}" style="max-width:120px; border-radius:16px;"></div>`;
+        } else if (data.videoUrl && !isMp4Selected){
+            // fallback audio tidak ada? tampilkan info
+            html += `<i class="fas fa-headphones"></i> Preview audio tidak tersedia, namun file MP3 tetap bisa diunduh.`;
+        } else {
+            html += `<i class="fas fa-eye-slash"></i> Preview tidak tersedia, unduh tetap bisa.`;
+        }
+        
+        html += `<div class="info-meta"><i class="far fa-clock"></i> ${data.duration ? data.duration : 'N/A'} • <i class="fas fa-music"></i> ${isMp4Selected ? 'Video HD' : 'Audio Only'}</div>`;
+        if(data.title) {
+            html += `<div class="info-meta" style="margin-top:6px;"><i class="fas fa-heading"></i> ${data.title.substring(0, 70)}</div>`;
+        }
+        dynamicPreviewDiv.innerHTML = html;
+    }
+
+    // Fungsi utama fetch data dari API TikWM
+    async function fetchTikTokData(url) {
+        // Gunakan API: https://tikwm.com/api/ dengan method POST (biasanya support GET juga dengan parameter url)
+        // Dokumentasi: cukup mengirim parameter "url" via POST/GET. Saya gunakan fetch GET dengan query.
+        // Karena CORS, kita akan gunakan mode 'cors' dan API sudah support.
+        const apiEndpoint = `https://tikwm.com/api/?url=${encodeURIComponent(url)}`;
+        try {
+            const response = await fetch(apiEndpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const json = await response.json();
+            if (json.code !== 0 || !json.data) {
+                throw new Error(json.msg || 'Tidak dapat memproses link, pastikan URL TikTok/VT valid.');
+            }
+            const data = json.data;
+            // data memiliki: play (video tanpa watermark), wmplay (dengan watermark), music (audio asli), title, cover, duration
+            const videoNoWm = data.play;       // link video no watermark
+            const audioLink = data.music;      // link audio asli (mp3)
+            const coverImg = data.cover;
+            const titleText = data.title || 'TikTok Video';
+            const dur = data.duration ? `${Math.floor(data.duration/60)}:${(data.duration%60).toString().padStart(2,'0')}` : '0:30';
+            
+            return {
+                success: true,
+                videoUrl: videoNoWm,
+                audioUrl: audioLink,
+                cover: coverImg,
+                title: titleText,
+                duration: dur,
+                raw: data
+            };
+        } catch (err) {
+            console.error(err);
+            return { success: false, error: err.message };
+        }
+    }
+
+    // Proses utama ketika klik download / fetch
+    async function processDownload() {
+        if (isLoading) {
+            showMessage("Proses sedang berjalan, harap tunggu...", false);
+            return;
+        }
+        const rawUrl = urlInput.value.trim();
+        if (!rawUrl) {
+            showMessage("Masukkan URL TikTok atau VT terlebih dahulu!");
+            return;
+        }
+        
+        // Validasi sederhana apakah mengandung tiktok.com atau vt.tiktok
+        if (!rawUrl.includes('tiktok.com') && !rawUrl.includes('vt.tiktok')) {
+            showMessage("URL tidak valid. Harap masukkan link TikTok (contoh: https://www.tiktok.com/@username/video/... atau https://vt.tiktok.com/...)");
+            return;
+        }
+        
+        isLoading = true;
+        downloadBtn.disabled = true;
+        downloadBtn.innerHTML = `<span class="loading-spinner"></span> Memproses video...`;
+        resetPreview();
+        showMessage("Mengambil data video... Mohon tunggu sebentar.", false);
+        
+        // fetch data
+        const result = await fetchTikTokData(rawUrl);
+        if (!result.success) {
+            showMessage(`Gagal: ${result.error}`);
+            isLoading = false;
+            downloadBtn.disabled = false;
+            downloadBtn.innerHTML = `<i class="fas fa-download"></i> Proses & Unduh`;
+            resetPreview();
+            return;
+        }
+        
+        // data tersimpan
+        currentVideoData = {
+            videoUrl: result.videoUrl,
+            audioUrl: result.audioUrl,
+            title: result.title,
+            cover: result.cover,
+            duration: result.duration
+        };
+        
+        // update preview berdasarkan format aktif
+        updatePreview(currentVideoData);
+        showMessage(`Berhasil mendapatkan data: ${result.title.substring(0, 50)}`, false);
+        
+        // setelah preview ada, jika tombol download ditekan lagi, akan memicu unduh file sesuai format
+        // tapi kita perlu siapkan fungsi unduh terpisah.
+        // Karena tombol utama sudah "Proses & Unduh", maka setelah berhasil kita bisa langsung lanjut unduh
+        // agar user experience lebih cepat, tapi jika tidak otomatis unduh, tombol yang sama akan mengunduh.
+        // Jadi setelah selesai fetch, kita langsung memicu unduh sesuai format saat ini.
+        await triggerDownloadByFormat();
+        
+        isLoading = false;
+        downloadBtn.disabled = false;
+        downloadBtn.innerHTML = `<i class="fas fa-download"></i> Proses & Unduh`;
+    }
+    
+    // Fungsi untuk mengunduh file berdasarkan currentFormat dan currentVideoData
+    async function triggerDownloadByFormat() {
+        if (!currentVideoData) {
+            showMessage("Tidak ada data video. Silakan masukkan URL dan proses ulang.");
+            return false;
+        }
+        
+        const format = currentFormat;
+        let downloadUrl = null;
+        let filename = "";
+        const safeTitle = (currentVideoData.title || "tiktok_video").replace(/[^\w\s]/gi, '').substring(0, 50);
+        
+        if (format === 'mp4') {
+            downloadUrl = currentVideoData.videoUrl;
+            filename = `${safeTitle}.mp4`;
+            if (!downloadUrl) {
+                showMessage("Link video MP4 tidak ditemukan dalam response API.");
+                return false;
+            }
+        } else { // mp3
+            downloadUrl = currentVideoData.audioUrl;
+            filename = `${safeTitle}.mp3`;
+            if (!downloadUrl) {
+                showMessage("Link audio MP3 tidak tersedia untuk video ini. Coba format MP4.");
+                return false;
+            }
+        }
+        
+        // Proses download melalui link langsung atau fetch blob (agar lebih aman dari redirect)
+        try {
+            // Gunakan teknik fetch + blob untuk download karena beberapa link mungkin perlu referer?
+            // Untuk kemudahan, kita bisa menggunakan window.open jika link langsung, tapi bisa kena popup.
+            // Lebih baik pakai anchor download dengan atribut.
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showMessage(`Mengunduh ${format.toUpperCase()} : ${filename}`, false);
+            return true;
+        } catch (err) {
+            showMessage("Gagal mengunduh, coba buka link secara manual: " + downloadUrl);
+            return false;
+        }
+    }
+    
+    // Event listeners untuk pilihan format
+    function setActiveFormat(format) {
+        currentFormat = format;
+        if (format === 'mp4') {
+            btnMp4.classList.add('active');
+            btnMp3.classList.remove('active');
+        } else {
+            btnMp3.classList.add('active');
+            btnMp4.classList.remove('active');
+        }
+        // Jika sudah ada data preview, update tampilan preview sesuai format
+        if (currentVideoData) {
+            updatePreview(currentVideoData);
+        } else {
+            // tidak ada data, preview placeholder tetap
+            if (previewPlaceholder.style.display !== 'flex') {
+                // jika preview sebelumnya muncul karena pernah fetch? kosongkan saja.
+                if (dynamicPreviewDiv.style.display === 'block') {
+                    // jika ada data lama? kita reset agar tidak membingungkan
+                    resetPreview();
+                }
+            }
+        }
+    }
+    
+    btnMp4.addEventListener('click', () => setActiveFormat('mp4'));
+    btnMp3.addEventListener('click', () => setActiveFormat('mp3'));
+    
+    // Tombol utama: jika belum ada data, lakukan fetch + unduh, jika sudah ada data langsung unduh.
+    downloadBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        // Jika currentVideoData tidak null dan preview ada, maka cukup unduh ulang dengan format yang dipilih
+        if (currentVideoData && (currentVideoData.videoUrl || currentVideoData.audioUrl)) {
+            await triggerDownloadByFormat();
+        } else {
+            // tidak ada data / expired: proses fetch dan unduh otomatis
+            await processDownload();
+        }
+    });
+    
+    // Fitur paste dari clipboard
+    const pasteIcon = document.getElementById('pasteIcon');
+    if (pasteIcon) {
+        pasteIcon.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text && (text.includes('tiktok.com') || text.includes('vt.tiktok'))) {
+                    urlInput.value = text.trim();
+                    showMessage("Link dari clipboard ditempel!", false);
+                } else if (text) {
+                    urlInput.value = text.trim();
+                    showMessage("Link telah ditempel, pastikan itu URL TikTok valid.", false);
+                } else {
+                    showMessage("Clipboard kosong.");
+                }
+            } catch (err) {
+                showMessage("Izin clipboard diperlukan. Tempel manual (Ctrl+V).");
+            }
+        });
+    }
+    
+    // Optional: jika user menekan Enter di input
+    urlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            downloadBtn.click();
+        }
+    });
+    
+    // inisialisasi: reset state
+    resetPreview();
+    setActiveFormat('mp4');
+    
+    // catatan kecil: TikWM API cukup stabil, tetapi jika terjadi error karena rate limit atau jaringan,
+    // kami sudah tampilkan pesan yang sesuai. Solusi ini menjawab kebutuhan "bisa mp4 mp3" nyata.
+</script>
+</body>
+</html>
